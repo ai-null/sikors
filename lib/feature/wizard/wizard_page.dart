@@ -24,12 +24,19 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
 
   // STATES
   int _currentProgressIndex = 0;
+  late List<List<int>> _scrollableCategoriesContent;
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController(initialPage: 1);
     _tabController = TabController(length: _stepperLength, vsync: this);
+
+    _scrollableCategoriesContent =
+        List.generate(_scrollableCategoriesLength, (index) {
+      return List.generate(Random().nextInt(5) + 5,
+          (_) => Random().nextInt(DefAsset.values.length - 1));
+    });
 
     // CREATING PROGRESSBAR CONTROLLER
     _progressBarController = List.generate(_stepperLength, (index) {
@@ -54,13 +61,18 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
 
     // START SCROLLABLE CATEGORIES CONTROLLER
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      for (var i = 0; i < _scrollableCategoriesLength; i++) {
-        final controller = _scrollableCategoriesController[i];
+      for (var controller in _scrollableCategoriesController) {
         final max = controller.position.maxScrollExtent;
         final min = controller.position.minScrollExtent;
         var direction = max;
 
-        _startScrollableCategories(controller, max, min, direction);
+        _startScrollableCategories(
+          max,
+          min,
+          direction,
+          controller,
+          Random().nextInt(30) + 5,
+        );
       }
     });
     // START ANIMATION
@@ -72,8 +84,8 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
     super.dispose();
     _pageViewController.dispose();
     _tabController.dispose();
-    for (var barControllerer in _progressBarController) {
-      barControllerer.dispose();
+    for (var controller in _progressBarController) {
+      controller.dispose();
     }
 
     for (var controller in _scrollableCategoriesController) {
@@ -185,7 +197,8 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
             // === AUTOMATED SCROLLING CATEGORIES ===
             ...List.generate(_scrollableCategoriesLength, (index) {
               return ScrollableCategories(
-                _scrollableCategoriesController[index],
+                scrollController: _scrollableCategoriesController[index],
+                content: _scrollableCategoriesContent[index],
               );
             }),
 
@@ -213,17 +226,17 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
     );
   }
 
-  _startScrollableCategories(
-      ScrollController controller, double min, double max, double direction) {
+  _startScrollableCategories(double max, double min, double direction,
+      ScrollController controller, int duration) {
     controller
         .animateTo(
-      max,
-      duration: const Duration(seconds: 25),
+      direction,
+      duration: Duration(seconds: duration),
       curve: Curves.linear,
     )
         .then((value) {
       direction = direction == max ? min : max;
-      _startScrollableCategories(controller, min, max, direction);
+      _startScrollableCategories(max, min, direction, controller, duration);
     });
   }
 
@@ -257,8 +270,14 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
 }
 
 class ScrollableCategories extends StatelessWidget {
-  final ScrollController _scrollController;
-  const ScrollableCategories(this._scrollController, {super.key});
+  final ScrollController? scrollController;
+  final List<int> content;
+
+  const ScrollableCategories({
+    super.key,
+    this.scrollController,
+    required this.content,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -266,13 +285,16 @@ class ScrollableCategories extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
         height: 64,
-        child: ListView(
-          controller: _scrollController,
+        width: double.infinity,
+        child: ListView.builder(
+          controller: scrollController,
+          shrinkWrap: false,
           scrollDirection: Axis.horizontal,
-          children: List.generate(Random().nextInt(5) + 5, (index) {
-            final finalIndex = Random().nextInt(DefAsset.values.length - 1);
-            final name = DefAsset.values.keys.elementAt(finalIndex);
-            final value = DefAsset.values.values.elementAt(finalIndex);
+          itemCount: content.length,
+          itemBuilder: (_, index) {
+            final name = DefAsset.values.keys.elementAt(content[index]);
+            final value = DefAsset.values.values.elementAt(content[index]);
+
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
@@ -307,7 +329,7 @@ class ScrollableCategories extends StatelessWidget {
                 ],
               ),
             );
-          }),
+          },
         ),
       ),
     );
