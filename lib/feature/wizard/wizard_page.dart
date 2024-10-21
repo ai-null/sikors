@@ -5,6 +5,7 @@ import 'package:sikors/core/assets/asset.dart';
 import 'package:sikors/core/design/color.dart';
 import 'package:sikors/core/design/size.dart';
 import 'package:sikors/core/design/typography.dart';
+import 'package:sikors/feature/homepage/homepage.dart';
 
 const _stepperLength = 4;
 const _scrollableCategoriesLength = 3;
@@ -202,13 +203,20 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
               );
             }),
 
+            const Expanded(child: SizedBox()),
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: SizedBox(
                 width: double.infinity,
                 height: 64,
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const HomePage();
+                      }));
+                    },
                     style: const ButtonStyle(
                       backgroundColor:
                           MaterialStatePropertyAll(DefColor.colorBrown50),

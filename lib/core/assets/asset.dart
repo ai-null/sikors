@@ -7,6 +7,10 @@ class DefAsset {
   static const imgJuventus = 'assets/images/juventus.png';
   static const imgMU = 'assets/images/manchester_united.png';
 
+  // ICONS
+  static const icSikors = 'assets/images/logo-sikor.png';
+  static const icProfile = 'assets/images/profile.png';
+
   static const values = {
     'Indonesia': DefAsset.imgIndonesia,
     'Spain': DefAsset.imgSpain,
