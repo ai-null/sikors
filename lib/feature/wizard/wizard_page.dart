@@ -100,11 +100,11 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
       backgroundColor: DefColor.colorRed900,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                Padding(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -144,9 +144,11 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
+              ),
 
-                // ==== PAGEVIEW ====
-                Container(
+              // ==== PAGEVIEW ====
+              Flexible(
+                child: Container(
                   margin: const EdgeInsets.all(16),
                   height: 320,
                   clipBehavior: Clip.hardEdge,
@@ -195,42 +197,53 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 8),
+              // const Expanded(child: SizedBox()),
 
-                // === AUTOMATED SCROLLING CATEGORIES ===
-                ...List.generate(_scrollableCategoriesLength, (index) {
-                  return ScrollableCategories(
-                    scrollController: _scrollableCategoriesController[index],
-                    content: _scrollableCategoriesContent[index],
-                  );
-                }),
+              // === AUTOMATED SCROLLING CATEGORIES ===
+              Flexible(
+                child: Column(
+                  children: List.generate(
+                    _scrollableCategoriesLength,
+                    (index) {
+                      return ScrollableCategories(
+                        scrollController:
+                            _scrollableCategoriesController[index],
+                        content: _scrollableCategoriesContent[index],
+                      );
+                    },
+                  ),
+                ),
+              ),
 
-                Padding(
+              Flexible(
+                child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 50, 16, 16),
                   child: SizedBox(
                     width: double.infinity,
                     height: 64,
                     child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            return const HomePage();
-                          }));
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(DefColor.colorBrown50),
-                        ),
-                        child: Text(
-                          'Continue',
-                          style: DefTypography.titleLarge
-                              .copyWith(color: DefColor.colorRed900),
-                        )),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return const HomePage();
+                        }));
+                      },
+                      style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(DefColor.colorBrown50),
+                      ),
+                      child: Text(
+                        'Continue',
+                        style: DefTypography.titleLarge
+                            .copyWith(color: DefColor.colorRed900),
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
