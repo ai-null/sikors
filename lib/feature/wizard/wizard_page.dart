@@ -99,136 +99,139 @@ class _WizardPageState extends State<WizardPage> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: DefColor.colorRed900,
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // ==== PROGRESS BAR / STEPPER ====
-                  Container(
-                    height: 16,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: DefColor.colorRed50,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(
-                          DefShape.medium,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ==== PROGRESS BAR / STEPPER ====
+                      Container(
+                        height: 16,
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: DefColor.colorRed50,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(
+                              DefShape.medium,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          children: List.generate(
+                            4,
+                            (index) {
+                              return Expanded(
+                                child: LinearProgressIndicator(
+                                  color: DefColor.colorRed400,
+                                  backgroundColor: DefColor.colorNeutral100,
+                                  minHeight: 8,
+                                  value: _progressBarController[index].value,
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(DefShape.extraSmall),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    child: Row(
-                      children: List.generate(
-                        4,
-                        (index) {
-                          return Expanded(
-                            child: LinearProgressIndicator(
-                              color: DefColor.colorRed400,
-                              backgroundColor: DefColor.colorNeutral100,
-                              minHeight: 8,
-                              value: _progressBarController[index].value,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(DefShape.extraSmall),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ==== PAGEVIEW ====
-            Container(
-              margin: const EdgeInsets.all(16),
-              height: 320,
-              clipBehavior: Clip.hardEdge,
-              decoration: const BoxDecoration(
-                color: DefColor.colorNeutral50,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(
-                    DefShape.medium,
+                    ],
                   ),
                 ),
-              ),
-              child: Stack(
-                children: [
-                  // ==== WIZARD CARD ====
-                  PageView(
-                    controller: _pageViewController,
-                    scrollDirection: Axis.horizontal,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: List.generate(
-                      _stepperLength,
-                      (index) {
-                        return const _WizardCard();
-                      },
-                    ),
-                  ),
 
-                  // ==== SKIP BUTTON ====
-                  Positioned(
-                    right: 0,
-                    child: Material(
-                      child: InkWell(
-                        onTap: () {},
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 4),
-                              child: Text('Skip'),
-                            ),
-                            Icon(Icons.chevron_right_rounded)
-                          ]),
-                        ),
+                // ==== PAGEVIEW ====
+                Container(
+                  margin: const EdgeInsets.all(16),
+                  height: 320,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: const BoxDecoration(
+                    color: DefColor.colorNeutral50,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        DefShape.medium,
                       ),
                     ),
-                  )
-                ],
-              ),
+                  ),
+                  child: Stack(
+                    children: [
+                      // ==== WIZARD CARD ====
+                      PageView(
+                        controller: _pageViewController,
+                        scrollDirection: Axis.horizontal,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: List.generate(
+                          _stepperLength,
+                          (index) {
+                            return const _WizardCard();
+                          },
+                        ),
+                      ),
+
+                      // ==== SKIP BUTTON ====
+                      Positioned(
+                        right: 0,
+                        child: Material(
+                          child: InkWell(
+                            onTap: () {},
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(children: [
+                                Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Text('Skip'),
+                                ),
+                                Icon(Icons.chevron_right_rounded)
+                              ]),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // === AUTOMATED SCROLLING CATEGORIES ===
+                ...List.generate(_scrollableCategoriesLength, (index) {
+                  return ScrollableCategories(
+                    scrollController: _scrollableCategoriesController[index],
+                    content: _scrollableCategoriesContent[index],
+                  );
+                }),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 50, 16, 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 64,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return const HomePage();
+                          }));
+                        },
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(DefColor.colorBrown50),
+                        ),
+                        child: Text(
+                          'Continue',
+                          style: DefTypography.titleLarge
+                              .copyWith(color: DefColor.colorRed900),
+                        )),
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 8),
-
-            // === AUTOMATED SCROLLING CATEGORIES ===
-            ...List.generate(_scrollableCategoriesLength, (index) {
-              return ScrollableCategories(
-                scrollController: _scrollableCategoriesController[index],
-                content: _scrollableCategoriesContent[index],
-              );
-            }),
-
-            const Expanded(child: SizedBox()),
-
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 64,
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return const HomePage();
-                      }));
-                    },
-                    style: const ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll(DefColor.colorBrown50),
-                    ),
-                    child: Text(
-                      'Continue',
-                      style: DefTypography.titleLarge
-                          .copyWith(color: DefColor.colorRed900),
-                    )),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
